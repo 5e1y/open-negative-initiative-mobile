@@ -112,7 +112,7 @@ final class LinkModel {
                 let session = try await RemoteSession.connect(
                     addresses: desktop.addresses, hostKey: desktop.key,
                     identity: Keychain.identity(), phoneName: phoneName)
-                guard !Task.isCancelled else { return session.close() }
+                guard !Task.isCancelled else { return session.hangUp() }
                 dialing = nil
                 attach(session)
                 return
@@ -158,7 +158,7 @@ final class LinkModel {
     private func hangUp() {
         dialing?.cancel()
         dialing = nil
-        session?.close()
+        session?.hangUp()
         session = nil
         canImport = false
     }

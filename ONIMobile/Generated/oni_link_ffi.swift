@@ -646,12 +646,12 @@ public protocol RemoteSessionProtocol: AnyObject, Sendable {
      */
     func canSendFiles()  -> Bool
     
+    func current()  -> DisplayState
+    
     /**
      * Hangs up and stops the listener; the session cannot be reopened.
      */
-    func close() 
-    
-    func current()  -> DisplayState
+    func hangUp() 
     
     func hostKey()  -> Data
     
@@ -779,17 +779,6 @@ open func canSendFiles() -> Bool  {
 })
 }
     
-    /**
-     * Hangs up and stops the listener; the session cannot be reopened.
-     */
-open func close()  {try! rustCall() {
-        uniffiCallStatus in
-    uniffi_oni_link_ffi_fn_method_remotesession_close(
-            self.uniffiCloneHandle(),uniffiCallStatus
-    )
-}
-}
-    
 open func current() -> DisplayState  {
     return try!  FfiConverterTypeDisplayState_lift(try! rustCall() {
         uniffiCallStatus in
@@ -797,6 +786,17 @@ open func current() -> DisplayState  {
             self.uniffiCloneHandle(),uniffiCallStatus
     )
 })
+}
+    
+    /**
+     * Hangs up and stops the listener; the session cannot be reopened.
+     */
+open func hangUp()  {try! rustCall() {
+        uniffiCallStatus in
+    uniffi_oni_link_ffi_fn_method_remotesession_hang_up(
+            self.uniffiCloneHandle(),uniffiCallStatus
+    )
+}
 }
     
 open func hostKey() -> Data  {
@@ -1706,7 +1706,7 @@ enum LinkError: Swift.Error, Equatable, Hashable, Foundation.LocalizedError {
     case Unreachable
     case ImportUnavailable
     case ImportRefused
-    case Failed(message: String
+    case Failed(reason: String
     )
 
     
@@ -1748,7 +1748,7 @@ public struct FfiConverterTypeLinkError: FfiConverterRustBuffer {
         case 5: return .ImportUnavailable
         case 6: return .ImportRefused
         case 7: return .Failed(
-            message: try FfiConverterString.read(from: &buf)
+            reason: try FfiConverterString.read(from: &buf)
             )
 
          default: throw UniffiInternalError.unexpectedEnumCase
@@ -1788,9 +1788,9 @@ public struct FfiConverterTypeLinkError: FfiConverterRustBuffer {
             writeInt(&buf, Int32(6))
         
         
-        case let .Failed(message):
+        case let .Failed(reason):
             writeInt(&buf, Int32(7))
-            FfiConverterString.write(message, into: &buf)
+            FfiConverterString.write(reason, into: &buf)
             
         }
     }
@@ -2240,10 +2240,10 @@ private let initializationResult: InitializationResult = {
     if (uniffi_oni_link_ffi_checksum_method_remotesession_can_send_files() != 60128) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_oni_link_ffi_checksum_method_remotesession_close() != 37924) {
+    if (uniffi_oni_link_ffi_checksum_method_remotesession_current() != 38811) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_oni_link_ffi_checksum_method_remotesession_current() != 38811) {
+    if (uniffi_oni_link_ffi_checksum_method_remotesession_hang_up() != 36477) {
         return InitializationResult.apiChecksumMismatch
     }
     if (uniffi_oni_link_ffi_checksum_method_remotesession_host_key() != 6171) {

@@ -284,14 +284,14 @@ uint64_t uniffi_oni_link_ffi_fn_constructor_remotesession_pair(RustBuffer code_u
 int8_t uniffi_oni_link_ffi_fn_method_remotesession_can_send_files(uint64_t ptr, RustCallStatus *_Nonnull out_status
 );
 #endif
-#ifndef UNIFFI_FFIDEF_UNIFFI_ONI_LINK_FFI_FN_METHOD_REMOTESESSION_CLOSE
-#define UNIFFI_FFIDEF_UNIFFI_ONI_LINK_FFI_FN_METHOD_REMOTESESSION_CLOSE
-void uniffi_oni_link_ffi_fn_method_remotesession_close(uint64_t ptr, RustCallStatus *_Nonnull out_status
-);
-#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ONI_LINK_FFI_FN_METHOD_REMOTESESSION_CURRENT
 #define UNIFFI_FFIDEF_UNIFFI_ONI_LINK_FFI_FN_METHOD_REMOTESESSION_CURRENT
 RustBuffer uniffi_oni_link_ffi_fn_method_remotesession_current(uint64_t ptr, RustCallStatus *_Nonnull out_status
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ONI_LINK_FFI_FN_METHOD_REMOTESESSION_HANG_UP
+#define UNIFFI_FFIDEF_UNIFFI_ONI_LINK_FFI_FN_METHOD_REMOTESESSION_HANG_UP
+void uniffi_oni_link_ffi_fn_method_remotesession_hang_up(uint64_t ptr, RustCallStatus *_Nonnull out_status
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ONI_LINK_FFI_FN_METHOD_REMOTESESSION_HOST_KEY
@@ -629,15 +629,15 @@ uint16_t uniffi_oni_link_ffi_checksum_method_remotesession_can_send_files(void
     
 );
 #endif
-#ifndef UNIFFI_FFIDEF_UNIFFI_ONI_LINK_FFI_CHECKSUM_METHOD_REMOTESESSION_CLOSE
-#define UNIFFI_FFIDEF_UNIFFI_ONI_LINK_FFI_CHECKSUM_METHOD_REMOTESESSION_CLOSE
-uint16_t uniffi_oni_link_ffi_checksum_method_remotesession_close(void
-    
-);
-#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ONI_LINK_FFI_CHECKSUM_METHOD_REMOTESESSION_CURRENT
 #define UNIFFI_FFIDEF_UNIFFI_ONI_LINK_FFI_CHECKSUM_METHOD_REMOTESESSION_CURRENT
 uint16_t uniffi_oni_link_ffi_checksum_method_remotesession_current(void
+    
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ONI_LINK_FFI_CHECKSUM_METHOD_REMOTESESSION_HANG_UP
+#define UNIFFI_FFIDEF_UNIFFI_ONI_LINK_FFI_CHECKSUM_METHOD_REMOTESESSION_HANG_UP
+uint16_t uniffi_oni_link_ffi_checksum_method_remotesession_hang_up(void
     
 );
 #endif
