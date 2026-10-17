@@ -18,7 +18,7 @@ exported to Swift with UniFFI.
 
 ## Build on a Mac
 
-You need Xcode 15 or later, [rustup](https://rustup.rs), [XcodeGen](https://github.com/yonaskolb/XcodeGen)
+You need Xcode 16 or later, [rustup](https://rustup.rs), [XcodeGen](https://github.com/yonaskolb/XcodeGen)
 (`brew install xcodegen`), and `open-negative-initiative-rs` checked out next to this repository
 (or `ONI_RS=/path/to/open-negative-initiative-rs`).
 
