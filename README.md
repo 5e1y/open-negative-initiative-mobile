@@ -36,7 +36,20 @@ Run `scripts/build-rust.sh` again after any change to `oni-link` or `oni-link-ff
 
 On a Mac where Xcode's licence has not been accepted, so `xcodebuild` and XcodeGen refuse to run,
 `scripts/run-simulator.sh` builds the Rust library and the app straight from the toolchain and runs it on an
-"ONI Mobile Test" simulator. Installing on a real iPhone still needs Xcode with its licence accepted.
+"ONI Mobile Test" simulator. For a real iPhone, use TestFlight below.
+
+### TestFlight
+
+The **TestFlight** workflow (Actions, Run workflow) builds on a GitHub-hosted Mac, signs through the App
+Store Connect API and uploads the build; it reaches the phone through the TestFlight app. It needs the app
+`fr.courtillon.oni-mobile` created in App Store Connect and five repository secrets:
+
+| Secret | What it holds |
+|---|---|
+| `ASC_KEY_ID`, `ASC_ISSUER_ID` | The App Store Connect API key's ID and its issuer ID (Admin role, for cloud signing) |
+| `ASC_KEY_P8` | The contents of that key's `.p8` file |
+| `APPLE_TEAM_ID` | The developer team ID |
+| `ONI_RS_TOKEN` | A fine-grained GitHub token with read access to `open-negative-initiative-rs` |
 
 To run on a device: plug the iPhone in, choose it as the run destination, and run. The first launch asks for
 the camera (to read the pairing code), the local network (to reach the desktop) and, on the first import,

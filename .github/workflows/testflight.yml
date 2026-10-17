@@ -1,0 +1,63 @@
+# Builds, signs and uploads the app to TestFlight on a hosted Mac, whose Xcode licence is accepted.
+# Signing is cloud-managed through the App Store Connect API key: no certificate lives in the repo.
+name: TestFlight
+
+on:
+  workflow_dispatch:
+
+jobs:
+  upload:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      KEY_PATH: ${{ github.workspace }}/AuthKey.p8
+      AUTH: >-
+        -allowProvisioningUpdates
+        -authenticationKeyPath ${{ github.workspace }}/AuthKey.p8
+        -authenticationKeyID ${{ secrets.ASC_KEY_ID }}
+        -authenticationKeyIssuerID ${{ secrets.ASC_ISSUER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: open-negative-initiative-mobile
+      # The Rust repository is private: a read-only token reaches it.
+      - uses: actions/checkout@v4
+        with:
+          repository: 5e1y/open-negative-initiative-rs
+          ref: claude/project-thread-csrv03
+          token: ${{ secrets.ONI_RS_TOKEN }}
+          path: open-negative-initiative-rs
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim
+      - name: Tools
+        run: brew install xcodegen
+      - name: Rust library
+        working-directory: open-negative-initiative-mobile
+        run: scripts/build-rust.sh
+      - name: Project
+        working-directory: open-negative-initiative-mobile
+        env:
+          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+        run: xcodegen generate
+      - name: API key
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: printf '%s\n' "$ASC_KEY_P8" > "$KEY_PATH"
+      # Each upload needs a new build number; the run number only grows.
+      - name: Archive
+        working-directory: open-negative-initiative-mobile
+        run: |
+          xcodebuild archive -project ONIMobile.xcodeproj -scheme ONIMobile \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/ONIMobile.xcarchive" \
+            DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }} CURRENT_PROJECT_VERSION=${{ github.run_number }} $AUTH
+      - name: Upload
+        working-directory: open-negative-initiative-mobile
+        run: |
+          cp scripts/ExportOptions.plist "$RUNNER_TEMP/"
+          plutil -insert teamID -string ${{ secrets.APPLE_TEAM_ID }} "$RUNNER_TEMP/ExportOptions.plist"
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/ONIMobile.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" -exportPath "$RUNNER_TEMP/export" $AUTH
+      - name: Remove the key
+        if: always()
+        run: rm -f "$KEY_PATH"
