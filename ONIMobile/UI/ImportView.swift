@@ -78,10 +78,7 @@ struct ImportView: View {
     private func send(_ results: [PHPickerResult]) async {
         guard !results.isEmpty else { return }
         // A batch of DNGs outlasts a glance away from the phone: iOS grants it time to finish.
-        var background = UIBackgroundTaskIdentifier.invalid
-        background = UIApplication.shared.beginBackgroundTask(withName: "Import") {
-            UIApplication.shared.endBackgroundTask(background)
-        }
+        let background = BackgroundTime("Import")
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("import-\(UUID().uuidString)")
         let total = results.count
         let outcome: ImportOutcome
@@ -99,11 +96,27 @@ struct ImportView: View {
         try? FileManager.default.removeItem(at: folder)
         batches.insert(Batch(count: total, outcome: outcome), at: 0)
         working = nil
-        UIApplication.shared.endBackgroundTask(background)
+        background.end()
     }
 
     private func summary(_ batch: Batch) -> String {
         let sent = "\(batch.outcome.sent) of \(batch.count) sent"
         return batch.outcome.skipped > 0 ? sent + ", \(batch.outcome.skipped) declined" : sent
+    }
+}
+
+/// Extra time from iOS, ended once: by its expiry or when the batch is done, whichever comes first.
+@MainActor
+private final class BackgroundTime {
+    private var id = UIBackgroundTaskIdentifier.invalid
+
+    init(_ name: String) {
+        id = UIApplication.shared.beginBackgroundTask(withName: name) { [weak self] in self?.end() }
+    }
+
+    func end() {
+        guard id != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(id)
+        id = .invalid
     }
 }
