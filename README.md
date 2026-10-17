@@ -18,15 +18,10 @@ exported to Kotlin and Swift with UniFFI.
 
 ## Android
 
-The **Android** workflow (Actions, Run workflow) builds a debug APK and keeps it as the run's `oni-mobile-apk` artifact.
-Open it on the phone and allow installs from that source once. Every APK is signed with the committed
-`android/app/debug.keystore`, so a newer one installs over the last and keeps the pairing.
-
-The workflow reads `open-negative-initiative-rs` with a read-only deploy key, set once from a Mac with `gh`:
-
-```sh
-k=$(mktemp -d) && ssh-keygen -t ed25519 -N "" -C oni-mobile-ci -f "$k/key" -q && gh repo deploy-key add "$k/key.pub" -R 5e1y/open-negative-initiative-rs -t "oni-mobile CI" && gh secret set ONI_RS_DEPLOY_KEY -R 5e1y/open-negative-initiative-mobile < "$k/key" && rm -rf "$k" && echo OK
-```
+The APK is built locally. The **Android** workflow (Actions, Run workflow) builds the same debug APK on
+demand and keeps it as the run's `oni-mobile-apk` artifact. Open it on the phone and allow installs from
+that source once. Every APK is signed with the committed `android/app/debug.keystore`, so a newer one
+installs over the last and keeps the pairing.
 
 To build locally you need the Android SDK and NDK, [cargo-ndk](https://github.com/bbqsrc/cargo-ndk), and
 `open-negative-initiative-rs` next to this repository:
