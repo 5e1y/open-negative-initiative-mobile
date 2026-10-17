@@ -75,7 +75,8 @@ struct ImportView: View {
         }
     }
 
-    private func send(_ results: [PHPickerResult]) async {
+    /// The picks are handed over whole, so the export may read them off the main actor.
+    private func send(_ results: sending [PHPickerResult]) async {
         guard !results.isEmpty else { return }
         // A batch of DNGs outlasts a glance away from the phone: iOS grants it time to finish.
         let background = BackgroundTime("Import")
