@@ -12,14 +12,15 @@ The desktop shows the photo full screen; the phone holds the Scanner face's keyp
   of a negative on a light table arrives as its DNG, never as a JPEG rendition.
 
 The phone talks to the desktop over the local network: ONI Link (Noise IK, paired once by a QR code) for the
-keys, LocalSend v2 for the photos. The Rust side is the `oni-link-ffi` crate of the `oni-link` workspace,
+keys, LocalSend v2 for the photos. The Rust side is the `oni-link-ffi` crate of
+[open-negative-initiative-rs](https://github.com/5e1y/open-negative-initiative-rs),
 exported to Swift with UniFFI.
 
 ## Build on a Mac
 
 You need Xcode 15 or later, [rustup](https://rustup.rs), [XcodeGen](https://github.com/yonaskolb/XcodeGen)
-(`brew install xcodegen`), and the `oni-link` workspace checked out next to this repository
-(or `ONI_LINK=/path/to/oni-link`).
+(`brew install xcodegen`), and `open-negative-initiative-rs` checked out next to this repository
+(or `ONI_RS=/path/to/open-negative-initiative-rs`).
 
 ```sh
 scripts/build-rust.sh          # adds the iOS Rust targets, builds Frameworks/OniLinkFFI.xcframework,

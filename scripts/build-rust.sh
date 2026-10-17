@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Builds oni-link-ffi for iPhone and the Apple-silicon simulator into Frameworks/OniLinkFFI.xcframework,
-# then regenerates the Swift bindings. Runs on a Mac; ONI_LINK names the oni-link workspace, else a sibling.
+# then regenerates the Swift bindings. Runs on a Mac; ONI_RS names the Rust repository, else a sibling.
 set -euo pipefail
 
 here=$(cd "$(dirname "$0")/.." && pwd)
-link=${ONI_LINK:-$here/../oni-link}
+link=${ONI_RS:-$here/../open-negative-initiative-rs}
 targets=(aarch64-apple-ios aarch64-apple-ios-sim)
 library=liboni_link_ffi.a
 
