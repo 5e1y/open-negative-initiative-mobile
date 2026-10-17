@@ -25,7 +25,7 @@ jobs:
         with:
           repository: 5e1y/open-negative-initiative-rs
           ref: claude/project-thread-csrv03
-          token: ${{ secrets.ONI_RS_TOKEN }}
+          ssh-key: ${{ secrets.ONI_RS_DEPLOY_KEY }}
           path: open-negative-initiative-rs
       - uses: dtolnay/rust-toolchain@stable
         with:

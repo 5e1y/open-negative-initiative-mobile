@@ -1,0 +1,55 @@
+name: Android
+
+# Builds the debug APK, signed with the committed debug key so each one installs over the last.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: open-negative-initiative-mobile
+
+      - uses: actions/checkout@v4
+        with:
+          repository: 5e1y/open-negative-initiative-rs
+          ssh-key: ${{ secrets.ONI_RS_DEPLOY_KEY }}
+          path: open-negative-initiative-rs
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: open-negative-initiative-rs
+
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk --locked
+
+      - name: Build the link library and its Kotlin bindings
+        run: |
+          export ANDROID_NDK_HOME="$ANDROID_NDK_LATEST_HOME"
+          open-negative-initiative-mobile/scripts/build-android-rust.sh
+        env:
+          ONI_RS: ${{ github.workspace }}/open-negative-initiative-rs
+
+      # The committed bindings must be what the Rust side generates, or the app was written against another API.
+      - name: Check the committed bindings
+        run: git -C open-negative-initiative-mobile diff --exit-code -- android/app/src/main/java/uniffi
+
+      - name: Unit tests and APK
+        working-directory: open-negative-initiative-mobile/android
+        run: ./gradlew --no-daemon testDebugUnitTest assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oni-mobile-apk
+          path: open-negative-initiative-mobile/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
