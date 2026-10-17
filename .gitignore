@@ -1,0 +1,6 @@
+ONIMobile.xcodeproj/
+Frameworks/
+build/
+DerivedData/
+.DS_Store
+xcuserdata/

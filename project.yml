@@ -1,0 +1,37 @@
+name: ONIMobile
+options:
+  bundleIdPrefix: fr.courtillon
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ${DEVELOPMENT_TEAM}
+targets:
+  ONIMobile:
+    type: application
+    platform: iOS
+    sources:
+      - path: ONIMobile
+        excludes:
+          - "Resources/**"
+          - "Generated/*.h"
+          - "Generated/*.modulemap"
+          - "**/*.txt"
+      - path: ONIMobile/Resources/Keycap
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - framework: Frameworks/OniLinkFFI.xcframework
+        embed: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: fr.courtillon.oni-mobile
+        PRODUCT_NAME: ONIMobile
+        INFOPLIST_FILE: ONIMobile/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
