@@ -18,7 +18,7 @@ exported to Kotlin and Swift with UniFFI.
 
 ## Android
 
-The **Android** workflow builds a debug APK on every push and keeps it as the run's `oni-mobile-apk` artifact.
+The **Android** workflow (Actions, Run workflow) builds a debug APK and keeps it as the run's `oni-mobile-apk` artifact.
 Open it on the phone and allow installs from that source once. Every APK is signed with the committed
 `android/app/debug.keystore`, so a newer one installs over the last and keeps the pairing.
 

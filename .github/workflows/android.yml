@@ -1,9 +1,8 @@
 name: Android
 
 # Builds the debug APK, signed with the committed debug key so each one installs over the last.
+# Run by hand only: every run spends the account's Actions minutes.
 on:
-  push:
-  pull_request:
   workflow_dispatch:
 
 jobs:
