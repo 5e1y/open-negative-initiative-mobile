@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="canvas">#1B1B1B</color>
+    <color name="ground">#282828</color>
     <style name="Theme.ONIMobile" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@color/canvas</item>
+        <item name="android:windowBackground">@color/ground</item>
     </style>
 </resources>

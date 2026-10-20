@@ -35,11 +35,12 @@ class TokensTest {
 
     @Test
     fun theDesignSystemReadsTheGeneratedTokens() {
-        assertEquals(Tokens.Palette.canvas, DS.Palette.canvas)
-        assertEquals(Tokens.Scanner.keyHeight, DS.Scanner.keyHeight)
-        assertEquals(Tokens.Scanner.bandCool.rgba, DS.Scanner.bandCool)
+        assertEquals(Tokens.Palette.panel, DS.Colour.ground)
+        assertEquals(Tokens.Control.handleThickness, DS.SliderStyle.knobWidth)
+        assertEquals(Tokens.Scanner.keyHeight, DS.ScannerStyle.keyHeight)
+        assertEquals(Tokens.Scanner.bandCool, DS.ScannerStyle.bandCool)
         // Twin: two bands of the keypad are two tokens, so the check tells them apart.
-        assertNotEquals(DS.Scanner.bandCool, DS.Scanner.bandWarm)
+        assertNotEquals(DS.ScannerStyle.bandCool, DS.ScannerStyle.bandWarm)
     }
 
     /** A size, a colour or a duration written as a number in a screen, outside the design system. */

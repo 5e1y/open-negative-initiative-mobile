@@ -44,7 +44,4 @@ object PanelLayout {
         }
         return out
     }
-
-    /** A slider's keys: hundredths of its track, the outer ones ten at a time. */
-    val steps = listOf(-10, -1, 1, 10)
 }

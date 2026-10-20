@@ -23,6 +23,7 @@ import uniffi.oni_link_ffi.DisplayListener
 import uniffi.oni_link_ffi.DisplayState
 import uniffi.oni_link_ffi.LinkException
 import uniffi.oni_link_ffi.Panel
+import uniffi.oni_link_ffi.Param
 import uniffi.oni_link_ffi.RemoteSession
 import uniffi.oni_link_ffi.ScannerState
 import uniffi.oni_link_ffi.parsePairingCode
@@ -52,9 +53,14 @@ class LinkModel(application: Application) : AndroidViewModel(application) {
     /** True when the connected desktop announced a receiver for photos. */
     var canImport by mutableStateOf(false)
         private set
+    /** A press sent and not yet answered by the desktop: what the screen shows of it is a guess. */
+    var unanswered by mutableStateOf(false)
+        private set
 
     private var session: RemoteSession? = null
     private var dialing: Job? = null
+    /** A hang-up waiting out `GRACE_MS` after the app left the screen. */
+    private var leaving: Job? = null
     private var active = false
     /** The picker covering the app, or a batch on its way, holds the session open. */
     private var holding = false
@@ -84,18 +90,28 @@ class LinkModel(application: Application) : AndroidViewModel(application) {
     /** Dials the paired desktop until it answers, for as long as the app is in front. */
     fun resume() {
         active = true
+        leaving?.cancel()
+        leaving = null
         val desktop = desktop ?: return
         if (session != null || dialing != null) return
         status = Status.CONNECTING
         dialing = viewModelScope.launch { dial(desktop) }
     }
 
-    /** Hangs up when the app leaves the screen, unless photos are being picked or sent. */
+    /**
+     * Hangs up once the app has stayed off the screen `GRACE_MS`, unless photos are being picked or
+     * sent: a turn of the phone or a glance at a notification rebuilds the screen, never the link.
+     */
     fun suspend() {
         active = false
         if (holding) return
-        hangUp()
-        if (desktop != null) status = Status.OFFLINE
+        leaving?.cancel()
+        leaving = viewModelScope.launch {
+            delay(GRACE_MS)
+            if (active || holding) return@launch
+            hangUp()
+            if (desktop != null) status = Status.OFFLINE
+        }
     }
 
     /** Drops the desktop and its key from this phone; the desktop keeps trusting it until revoked there. */
@@ -116,6 +132,16 @@ class LinkModel(application: Application) : AndroidViewModel(application) {
         state = session.press(command)
         // A face shows at once too; a slider's readout waits for the desktop to write it.
         panel = session.current().panel
+    }
+
+    /** A held slider's knob at `position` on its track; the session keeps one place on the wire. */
+    fun slide(param: Param, position: Float) {
+        if (status == Status.CONNECTED) session?.slide(param, position)
+    }
+
+    /** The hand off a slider: the desktop records the drag as one undo step. */
+    fun letGo(param: Param) {
+        if (status == Status.CONNECTED) session?.letGo(param)
     }
 
     /** Keeps the session through the system's photo picker, which takes the screen from the app. */
@@ -171,16 +197,11 @@ class LinkModel(application: Application) : AndroidViewModel(application) {
                 throw error
             } catch (error: LinkException) {
                 problem = describe(error)
-                status = Status.OFFLINE
-                // A desktop that revoked this phone refuses it every time: dialing again only drains the battery.
-                if (error is LinkException.Refused) {
-                    dialing = null
-                    return
-                }
             }
-            delay(pause * 1000)
-            pause = minOf(pause * 2, 8)
+            // In front, the phone dials again on its own, a little less often each time.
             status = Status.CONNECTING
+            delay(pause * 1000)
+            pause = minOf(pause * 2, MAX_PAUSE_S)
         }
     }
 
@@ -204,12 +225,15 @@ class LinkModel(application: Application) : AndroidViewModel(application) {
         state = display.state
         panel = display.panel
         roundTripMs = display.roundTripMs
+        unanswered = display.unanswered
         if (!display.connected) {
             hangUp()
+            problem = "The link to the desktop dropped."
             status = Status.OFFLINE
             if (active) resume()
             return
         }
+        problem = null
         status = Status.CONNECTED
     }
 
@@ -222,10 +246,14 @@ class LinkModel(application: Application) : AndroidViewModel(application) {
         }
         session = null
         canImport = false
+        unanswered = false
     }
 
     companion object {
         private const val RECONNECT_WAIT_MS = 10_000L
+        /** Off the screen this long, the app hangs up; shorter than the desktop's ten seconds of silence. */
+        private const val GRACE_MS = 5_000L
+        private const val MAX_PAUSE_S = 8L
 
         fun describe(error: LinkException): String = when (error) {
             is LinkException.BadCode -> "This is not an ONI pairing code."

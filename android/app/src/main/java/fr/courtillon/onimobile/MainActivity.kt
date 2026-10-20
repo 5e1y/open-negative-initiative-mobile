@@ -7,18 +7,14 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import fr.courtillon.onimobile.ds.DS
-import fr.courtillon.onimobile.ds.keycap.KeycapSound
+import fr.courtillon.onimobile.ds.Surface
 import fr.courtillon.onimobile.link.LinkModel
 import fr.courtillon.onimobile.ui.PairingScreen
 import fr.courtillon.onimobile.ui.RemoteScreen
@@ -30,7 +26,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
-        KeycapSound.load(this)
         // Dials on every return to the screen; hangs up once the app is no longer seen.
         lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) = link.resume()
@@ -39,8 +34,8 @@ class MainActivity : ComponentActivity() {
         if (savedInstanceState == null) pairFrom(intent)
 
         setContent {
-            MaterialTheme(colorScheme = darkColorScheme(background = DS.Palette.canvas, surface = DS.Palette.canvas)) {
-                Box(Modifier.fillMaxSize().background(DS.Palette.canvas).safeDrawingPadding()) {
+            Surface(Modifier.fillMaxSize()) {
+                Box(Modifier.fillMaxSize().safeDrawingPadding()) {
                     if (link.desktop == null) PairingScreen(link) else RemoteScreen(link)
                 }
             }

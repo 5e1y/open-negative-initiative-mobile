@@ -720,6 +720,8 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_oni_link_ffi_checksum_method_remotesession_host_name(
     ): Int
+    external fun uniffi_oni_link_ffi_checksum_method_remotesession_let_go(
+    ): Int
     external fun uniffi_oni_link_ffi_checksum_method_remotesession_press(
     ): Int
     external fun uniffi_oni_link_ffi_checksum_method_remotesession_preview(
@@ -727,6 +729,8 @@ internal object IntegrityCheckingUniffiLib {
     external fun uniffi_oni_link_ffi_checksum_method_remotesession_send_files(
     ): Int
     external fun uniffi_oni_link_ffi_checksum_method_remotesession_set_listener(
+    ): Int
+    external fun uniffi_oni_link_ffi_checksum_method_remotesession_slide(
     ): Int
     external fun uniffi_oni_link_ffi_checksum_constructor_remotesession_connect(
     ): Int
@@ -773,6 +777,8 @@ internal object UniffiLib {
     ): RustBuffer.ByValue
     external fun uniffi_oni_link_ffi_fn_method_remotesession_host_name(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    external fun uniffi_oni_link_ffi_fn_method_remotesession_let_go(`ptr`: Long,`param`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     external fun uniffi_oni_link_ffi_fn_method_remotesession_press(`ptr`: Long,`command`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_oni_link_ffi_fn_method_remotesession_preview(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
@@ -780,6 +786,8 @@ internal object UniffiLib {
     external fun uniffi_oni_link_ffi_fn_method_remotesession_send_files(`ptr`: Long,`paths`: RustBuffer.ByValue,
     ): Long
     external fun uniffi_oni_link_ffi_fn_method_remotesession_set_listener(`ptr`: Long,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_oni_link_ffi_fn_method_remotesession_slide(`ptr`: Long,`param`: RustBuffer.ByValue,`position`: Float,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     external fun uniffi_oni_link_ffi_fn_init_callback_vtable_displaylistener(`vtable`: UniffiVTableCallbackInterfaceDisplayListener,
     ): Unit
@@ -932,6 +940,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_oni_link_ffi_checksum_method_remotesession_host_name() and 0xFFFF) != 55030) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if ((lib.uniffi_oni_link_ffi_checksum_method_remotesession_let_go() and 0xFFFF) != 3564) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if ((lib.uniffi_oni_link_ffi_checksum_method_remotesession_press() and 0xFFFF) != 978) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -942,6 +953,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_oni_link_ffi_checksum_method_remotesession_set_listener() and 0xFFFF) != 22260) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_oni_link_ffi_checksum_method_remotesession_slide() and 0xFFFF) != 18521) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_oni_link_ffi_checksum_constructor_remotesession_connect() and 0xFFFF) != 57120) {
@@ -1514,6 +1528,11 @@ public interface RemoteSessionInterface {
     fun `hostName`(): kotlin.String
     
     /**
+     * The hand off the slider: the desktop records the drag as one undo step.
+     */
+    fun `letGo`(`param`: Param)
+    
+    /**
      * Sends a key and returns the screen as it will read once the desktop applies it.
      */
     fun `press`(`command`: Command): ScannerState
@@ -1532,6 +1551,12 @@ public interface RemoteSessionInterface {
      * Feeds `listener` the current screen, then every change; a second call replaces the first.
      */
     fun `setListener`(`listener`: DisplayListener)
+    
+    /**
+     * A held slider's knob at `position` on its track, 0 to 1, called at every move of the hand:
+     * one place flies at a time, the latest waiting, and the listener shows the knob at once.
+     */
+    fun `slide`(`param`: Param, `position`: kotlin.Float)
     
     companion object
 }
@@ -1709,6 +1734,22 @@ open class RemoteSession: Disposable, AutoCloseable, RemoteSessionInterface
 
     
     /**
+     * The hand off the slider: the desktop records the drag as one undo step.
+     */override fun `letGo`(`param`: Param)
+        = 
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_oni_link_ffi_fn_method_remotesession_let_go(
+        it,
+        
+        FfiConverterTypeParam.lower(`param`),_status)
+}
+    }
+    
+    
+
+    
+    /**
      * Sends a key and returns the screen as it will read once the desktop applies it.
      */override fun `press`(`command`: Command): ScannerState {
             return FfiConverterTypeScannerState.lift(
@@ -1776,6 +1817,24 @@ open class RemoteSession: Disposable, AutoCloseable, RemoteSessionInterface
         it,
         
         FfiConverterTypeDisplayListener.lower(`listener`),_status)
+}
+    }
+    
+    
+
+    
+    /**
+     * A held slider's knob at `position` on its track, 0 to 1, called at every move of the hand:
+     * one place flies at a time, the latest waiting, and the listener shows the knob at once.
+     */override fun `slide`(`param`: Param, `position`: kotlin.Float)
+        = 
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_oni_link_ffi_fn_method_remotesession_slide(
+        it,
+        
+        FfiConverterTypeParam.lower(`param`),
+        FfiConverterFloat.lower(`position`),_status)
 }
     }
     
@@ -1931,6 +1990,11 @@ data class DisplayState (
      * The open photo's face and the sliders of the panel's tabs on it.
      */
     var `panel`: Panel
+    , 
+    /**
+     * A press sent and not yet answered: what the screen shows of it is the phone's guess.
+     */
+    var `unanswered`: kotlin.Boolean
     
 ){
     
@@ -1951,6 +2015,7 @@ public object FfiConverterTypeDisplayState: FfiConverterRustBuffer<DisplayState>
             FfiConverterBoolean.read(buf),
             FfiConverterOptionalDouble.read(buf),
             FfiConverterTypePanel.read(buf),
+            FfiConverterBoolean.read(buf),
         )
     }
 
@@ -1958,7 +2023,8 @@ public object FfiConverterTypeDisplayState: FfiConverterRustBuffer<DisplayState>
             FfiConverterTypeScannerState.allocationSize(value.`state`) +
             FfiConverterBoolean.allocationSize(value.`connected`) +
             FfiConverterOptionalDouble.allocationSize(value.`roundTripMs`) +
-            FfiConverterTypePanel.allocationSize(value.`panel`)
+            FfiConverterTypePanel.allocationSize(value.`panel`) +
+            FfiConverterBoolean.allocationSize(value.`unanswered`)
     )
 
     override fun write(value: DisplayState, buf: ByteBuffer) {
@@ -1966,6 +2032,7 @@ public object FfiConverterTypeDisplayState: FfiConverterRustBuffer<DisplayState>
             FfiConverterBoolean.write(value.`connected`, buf)
             FfiConverterOptionalDouble.write(value.`roundTripMs`, buf)
             FfiConverterTypePanel.write(value.`panel`, buf)
+            FfiConverterBoolean.write(value.`unanswered`, buf)
     }
 }
 

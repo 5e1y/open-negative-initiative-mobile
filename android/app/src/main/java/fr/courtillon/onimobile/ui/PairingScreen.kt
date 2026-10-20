@@ -4,23 +4,13 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,18 +21,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
+import fr.courtillon.onimobile.ds.Button
 import fr.courtillon.onimobile.ds.DS
+import fr.courtillon.onimobile.ds.Ground
+import fr.courtillon.onimobile.ds.KeyPlate
+import fr.courtillon.onimobile.ds.Label
+import fr.courtillon.onimobile.ds.Progress
+import fr.courtillon.onimobile.ds.Section
+import fr.courtillon.onimobile.ds.Surface
+import fr.courtillon.onimobile.ds.TextField
+import fr.courtillon.onimobile.ds.TextRole
+import fr.courtillon.onimobile.ds.Tone
+import fr.courtillon.onimobile.ds.WarningBand
 import fr.courtillon.onimobile.link.LinkModel
 import kotlinx.coroutines.launch
 
@@ -79,58 +73,38 @@ fun PairingScreen(link: LinkModel) {
         }
     }
 
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(DS.Space.md),
-        verticalArrangement = Arrangement.spacedBy(DS.Space.md),
-    ) {
-        Text("ONI Mobile", color = DS.Palette.textPrimary, fontSize = DS.Type.heading, fontWeight = DS.Type.strong)
-        Text(
-            "Show ONI's pairing code on the desktop and hold the phone up to it. Both must be on the same network.",
-            color = DS.Palette.textSecondary,
-            fontSize = DS.Type.label,
-        )
-        Box(
-            Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(DS.Radius.control)).background(DS.Palette.lcdGlass),
-            contentAlignment = Alignment.Center,
-        ) {
-            when (camera) {
-                Camera.ALLOWED -> key(attempt) { QrScanner(Modifier.fillMaxSize()) { pair(it) } }
-                Camera.REFUSED -> Text(
-                    "The camera is off for ONI Mobile. Allow it in Settings, or paste the pairing link below.",
-                    color = DS.Palette.textSecondary,
-                    textAlign = TextAlign.Center,
-                    fontSize = DS.Type.value,
-                    modifier = Modifier.padding(DS.Space.md),
-                )
-                Camera.UNASKED -> Unit
-            }
-            if (busy) CircularProgressIndicator(color = DS.Palette.lcdInk)
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        Section("", separated = false) {
+            Label("ONI Mobile", role = TextRole.HEADING)
+            Label(
+                "Show ONI's pairing code on the desktop and hold the phone up to it. Both must be on the same network.",
+                tone = Tone.SECONDARY,
+                wrap = true,
+            )
         }
-        link.problem?.let { Text(it, color = DS.Palette.lampWait, fontSize = DS.Type.value) }
-        Spacer(Modifier.padding(top = DS.Space.sm))
-        BasicTextField(
-            value = pasted,
-            onValueChange = { pasted = it },
-            singleLine = true,
-            textStyle = TextStyle(color = DS.Palette.lcdInk, fontFamily = FontFamily.Monospace, fontSize = DS.Type.label),
-            cursorBrush = SolidColor(DS.Palette.lcdInk),
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None, autoCorrectEnabled = false),
-            modifier = Modifier.fillMaxWidth(),
-            decorationBox = { field ->
-                Box(Modifier.background(DS.Palette.lcdGlass, RoundedCornerShape(DS.Radius.badge)).padding(DS.Space.sm)) {
-                    if (pasted.isEmpty()) {
-                        Text(
-                            "oni-link://pair?…", color = DS.Palette.textSecondary,
-                            fontFamily = FontFamily.Monospace, fontSize = DS.Type.label,
-                        )
-                    }
-                    field()
+        Section("Pairing Code") {
+            Surface(Modifier.fillMaxWidth().aspectRatio(1f), ground = Ground.WELL, rounded = true) {
+                when (camera) {
+                    Camera.ALLOWED -> key(attempt) { QrScanner(Modifier.fillMaxSize()) { pair(it) } }
+                    Camera.REFUSED -> Label(
+                        "The camera is off for ONI Mobile. Allow it in Settings, or paste the pairing link below.",
+                        Modifier.padding(DS.Space.m),
+                        tone = Tone.SECONDARY,
+                        centred = true,
+                        wrap = true,
+                    )
+                    Camera.UNASKED -> Unit
                 }
-            },
-        )
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(DS.Space.sm)) {
-            LoneCap("PASTE", true, Modifier.weight(1f)) { pasted = clipboard.getText()?.text.orEmpty() }
-            LoneCap("PAIR", !busy && pasted.isNotBlank(), Modifier.weight(1f)) { pair(pasted) }
+            }
+            if (busy) Progress(null)
+            link.problem?.let { WarningBand(it) }
+        }
+        Section("Pairing Link") {
+            TextField(pasted, "oni-link://pair?…") { pasted = it }
+            KeyPlate(Modifier.fillMaxWidth()) {
+                Button("PASTE", Modifier.weight(1f)) { pasted = clipboard.getText()?.text.orEmpty() }
+                Button("PAIR", Modifier.weight(1f), enabled = !busy && pasted.isNotBlank()) { pair(pasted) }
+            }
         }
     }
 }

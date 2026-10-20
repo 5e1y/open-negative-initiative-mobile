@@ -47,7 +47,6 @@ class PanelLayoutTest {
     fun theTabsAndFacesAreTheDesktopsWords() {
         assertEquals(listOf("Roll", "Color", "Details"), PanelLayout.tabs.map(PanelLayout::title))
         assertEquals(listOf("Pro", "Scanner"), PanelLayout.faces.map(PanelLayout::title))
-        assertEquals(listOf("−10", "−", "+", "+10"), PanelLayout.steps.map(ScannerText::legend))
         // Twin: the desktop writes Color, never the British spelling.
         assertNotEquals("Colour", PanelLayout.title(PanelTab.COLOR))
     }
