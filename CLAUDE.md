@@ -14,8 +14,9 @@ out next to this repository; this repository holds only thin native interfaces o
 - **Android first** (Kotlin and Compose, `android/`, arm64 only, minSdk 29). The iPhone app (SwiftUI,
   `ONIMobile/`) builds and runs in the simulator but is parked.
 - **The desktop decides, the phone asks.** A key press is a relative command (step, reset, machine, walk,
-  undo, redo), never a value, so two hands add up and the desktop keeps the history; the desktop answers
-  with the full scanner state after every change. Keep the commands aligned with the Rust app's command
+  undo, redo), so two hands add up and the desktop keeps the history; a slider drag sends its position on
+  the desktop's own track (the desktop maps it to a value), latest wins, one drag one undo step. The
+  desktop answers with the full state after every change, and the phone shows only what it confirmed. Keep the commands aligned with the Rust app's command
   layer (`oni_link::Host`, `HostEvents::next()`, `Host::publish(State)`).
 - **Transport**: local network by default; Bluetooth LE later as a fallback, with the phone as the
   peripheral and the desktop as the central. Noise IK, paired once by a QR code (`psk1` for pairing).
