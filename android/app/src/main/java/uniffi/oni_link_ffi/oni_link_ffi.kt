@@ -920,7 +920,7 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_oni_link_ffi_checksum_method_remotesession_can_send_files() and 0xFFFF) != 60128) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if ((lib.uniffi_oni_link_ffi_checksum_method_remotesession_current() and 0xFFFF) != 38811) {
+    if ((lib.uniffi_oni_link_ffi_checksum_method_remotesession_current() and 0xFFFF) != 40004) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_oni_link_ffi_checksum_method_remotesession_hang_up() and 0xFFFF) != 36477) {
@@ -932,7 +932,7 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_oni_link_ffi_checksum_method_remotesession_host_name() and 0xFFFF) != 55030) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if ((lib.uniffi_oni_link_ffi_checksum_method_remotesession_press() and 0xFFFF) != 36797) {
+    if ((lib.uniffi_oni_link_ffi_checksum_method_remotesession_press() and 0xFFFF) != 978) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_oni_link_ffi_checksum_method_remotesession_preview() and 0xFFFF) != 13484) {
@@ -950,7 +950,7 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_oni_link_ffi_checksum_constructor_remotesession_pair() and 0xFFFF) != 23078) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if ((lib.uniffi_oni_link_ffi_checksum_method_displaylistener_on_display() and 0xFFFF) != 22525) {
+    if ((lib.uniffi_oni_link_ffi_checksum_method_displaylistener_on_display() and 0xFFFF) != 17798) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
 }
@@ -1926,6 +1926,11 @@ data class DisplayState (
      * The last round trip to the desktop and back, in milliseconds.
      */
     var `roundTripMs`: kotlin.Double?
+    , 
+    /**
+     * The open photo's face and the sliders of the panel's tabs on it.
+     */
+    var `panel`: Panel
     
 ){
     
@@ -1945,19 +1950,22 @@ public object FfiConverterTypeDisplayState: FfiConverterRustBuffer<DisplayState>
             FfiConverterTypeScannerState.read(buf),
             FfiConverterBoolean.read(buf),
             FfiConverterOptionalDouble.read(buf),
+            FfiConverterTypePanel.read(buf),
         )
     }
 
     override fun allocationSize(value: DisplayState) = (
             FfiConverterTypeScannerState.allocationSize(value.`state`) +
             FfiConverterBoolean.allocationSize(value.`connected`) +
-            FfiConverterOptionalDouble.allocationSize(value.`roundTripMs`)
+            FfiConverterOptionalDouble.allocationSize(value.`roundTripMs`) +
+            FfiConverterTypePanel.allocationSize(value.`panel`)
     )
 
     override fun write(value: DisplayState, buf: ByteBuffer) {
             FfiConverterTypeScannerState.write(value.`state`, buf)
             FfiConverterBoolean.write(value.`connected`, buf)
             FfiConverterOptionalDouble.write(value.`roundTripMs`, buf)
+            FfiConverterTypePanel.write(value.`panel`, buf)
     }
 }
 
@@ -2045,6 +2053,125 @@ public object FfiConverterTypePairingInfo: FfiConverterRustBuffer<PairingInfo> {
             FfiConverterByteArray.write(value.`hostKey`, buf)
             FfiConverterString.write(value.`name`, buf)
             FfiConverterSequenceString.write(value.`addresses`, buf)
+    }
+}
+
+
+
+/**
+ * The face and every slider the desktop's panel shows on it, in the panel's order.
+ */
+data class Panel (
+    var `face`: Face
+    , 
+    var `rows`: List<PanelRow>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePanel: FfiConverterRustBuffer<Panel> {
+    override fun read(buf: ByteBuffer): Panel {
+        return Panel(
+            FfiConverterTypeFace.read(buf),
+            FfiConverterSequenceTypePanelRow.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: Panel) = (
+            FfiConverterTypeFace.allocationSize(value.`face`) +
+            FfiConverterSequenceTypePanelRow.allocationSize(value.`rows`)
+    )
+
+    override fun write(value: Panel, buf: ByteBuffer) {
+            FfiConverterTypeFace.write(value.`face`, buf)
+            FfiConverterSequenceTypePanelRow.write(value.`rows`, buf)
+    }
+}
+
+
+
+/**
+ * A slider as the desktop shows it now.
+ */
+data class PanelRow (
+    var `param`: Param
+    , 
+    var `tab`: PanelTab
+    , 
+    /**
+     * The block's title, such as "Lighting".
+     */
+    var `block`: kotlin.String
+    , 
+    var `label`: kotlin.String
+    , 
+    /**
+     * The readout, such as "+0.25 EV".
+     */
+    var `value`: kotlin.String
+    , 
+    /**
+     * The knob's place on its track, 0 at the left end and 1 at the right.
+     */
+    var `position`: kotlin.Float
+    , 
+    /**
+     * Off the value a double click on the slider returns it to.
+     */
+    var `modified`: kotlin.Boolean
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePanelRow: FfiConverterRustBuffer<PanelRow> {
+    override fun read(buf: ByteBuffer): PanelRow {
+        return PanelRow(
+            FfiConverterTypeParam.read(buf),
+            FfiConverterTypePanelTab.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterFloat.read(buf),
+            FfiConverterBoolean.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: PanelRow) = (
+            FfiConverterTypeParam.allocationSize(value.`param`) +
+            FfiConverterTypePanelTab.allocationSize(value.`tab`) +
+            FfiConverterString.allocationSize(value.`block`) +
+            FfiConverterString.allocationSize(value.`label`) +
+            FfiConverterString.allocationSize(value.`value`) +
+            FfiConverterFloat.allocationSize(value.`position`) +
+            FfiConverterBoolean.allocationSize(value.`modified`)
+    )
+
+    override fun write(value: PanelRow, buf: ByteBuffer) {
+            FfiConverterTypeParam.write(value.`param`, buf)
+            FfiConverterTypePanelTab.write(value.`tab`, buf)
+            FfiConverterString.write(value.`block`, buf)
+            FfiConverterString.write(value.`label`, buf)
+            FfiConverterString.write(value.`value`, buf)
+            FfiConverterFloat.write(value.`position`, buf)
+            FfiConverterBoolean.write(value.`modified`, buf)
     }
 }
 
@@ -2284,6 +2411,40 @@ sealed class Command {
     object Redo : Command()
     
     
+    data class SetFace(
+        val `face`: uniffi.oni_link_ffi.Face) : Command()
+        
+    {
+        
+
+        companion object
+    }
+    
+    /**
+     * A panel slider moved by `by` hundredths of its track, as the desktop's arrow keys move it.
+     */
+    data class StepParam(
+        val `param`: uniffi.oni_link_ffi.Param, 
+        val `by`: kotlin.Byte) : Command()
+        
+    {
+        
+
+        companion object
+    }
+    
+    /**
+     * A panel slider back where a double click on the desktop returns it.
+     */
+    data class ResetParam(
+        val `param`: uniffi.oni_link_ffi.Param) : Command()
+        
+    {
+        
+
+        companion object
+    }
+    
 
     
 
@@ -2322,6 +2483,16 @@ public object FfiConverterTypeCommand : FfiConverterRustBuffer<Command>{
                 )
             7 -> Command.Undo
             8 -> Command.Redo
+            9 -> Command.SetFace(
+                FfiConverterTypeFace.read(buf),
+                )
+            10 -> Command.StepParam(
+                FfiConverterTypeParam.read(buf),
+                FfiConverterByte.read(buf),
+                )
+            11 -> Command.ResetParam(
+                FfiConverterTypeParam.read(buf),
+                )
             else -> throw RuntimeException("invalid enum value, something is very wrong!!")
         }
     }
@@ -2383,6 +2554,28 @@ public object FfiConverterTypeCommand : FfiConverterRustBuffer<Command>{
                 4UL
             )
         }
+        is Command.SetFace -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterTypeFace.allocationSize(value.`face`)
+            )
+        }
+        is Command.StepParam -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterTypeParam.allocationSize(value.`param`)
+                + FfiConverterByte.allocationSize(value.`by`)
+            )
+        }
+        is Command.ResetParam -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterTypeParam.allocationSize(value.`param`)
+            )
+        }
     }
 
     override fun write(value: Command, buf: ByteBuffer) {
@@ -2427,6 +2620,22 @@ public object FfiConverterTypeCommand : FfiConverterRustBuffer<Command>{
                 buf.putInt(8)
                 Unit
             }
+            is Command.SetFace -> {
+                buf.putInt(9)
+                FfiConverterTypeFace.write(value.`face`, buf)
+                Unit
+            }
+            is Command.StepParam -> {
+                buf.putInt(10)
+                FfiConverterTypeParam.write(value.`param`, buf)
+                FfiConverterByte.write(value.`by`, buf)
+                Unit
+            }
+            is Command.ResetParam -> {
+                buf.putInt(11)
+                FfiConverterTypeParam.write(value.`param`, buf)
+                Unit
+            }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
     }
 }
@@ -2462,6 +2671,43 @@ public object FfiConverterTypeEffect: FfiConverterRustBuffer<Effect> {
     override fun allocationSize(value: Effect) = 4UL
 
     override fun write(value: Effect, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+/**
+ * Pro's chain of sliders, or the Scanner's keypad.
+ */
+
+enum class Face {
+    
+    PRO,
+    SCANNER;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFace: FfiConverterRustBuffer<Face> {
+    override fun read(buf: ByteBuffer) = try {
+        Face.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: Face) = 4UL
+
+    override fun write(value: Face, buf: ByteBuffer) {
         buf.putInt(value.ordinal + 1)
     }
 }
@@ -2708,6 +2954,108 @@ public object FfiConverterTypeMachine: FfiConverterRustBuffer<Machine> {
 
 
 
+/**
+ * `PanelTab` rather than `Tab`: Compose's `Tab` would shadow it in a Kotlin screen.
+ */
+
+enum class PanelTab {
+    
+    ROLL,
+    COLOR,
+    DETAILS;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePanelTab: FfiConverterRustBuffer<PanelTab> {
+    override fun read(buf: ByteBuffer) = try {
+        PanelTab.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: PanelTab) = 4UL
+
+    override fun write(value: PanelTab, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+/**
+ * One slider of the desktop's panel.
+ */
+
+enum class Param {
+    
+    TEMPERATURE,
+    TINT,
+    COLOR_DENSITY,
+    EXPOSURE,
+    HIGHLIGHTS,
+    SHADOWS,
+    WHITE_POINT,
+    BLACK_POINT,
+    CONTRAST,
+    VIGNETTE,
+    CHROME,
+    BALANCE_STRENGTH,
+    DENSITY_CEILING,
+    DYE_SEPARATION,
+    SHARPEN_AMOUNT,
+    SHARPEN_RADIUS,
+    SHARPEN_HALO,
+    CHROMA_AMOUNT,
+    CHROMA_RADIUS,
+    TEXTURE,
+    PAPER_RED,
+    PAPER_GREEN,
+    PAPER_BLUE,
+    GAIN_RED,
+    GAIN_GREEN,
+    GAIN_BLUE,
+    FLAT_AMOUNT,
+    FLAT_TEMPERATURE,
+    FLAT_TINT;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeParam: FfiConverterRustBuffer<Param> {
+    override fun read(buf: ByteBuffer) = try {
+        Param.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: Param) = 4UL
+
+    override fun write(value: Param, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
 
 
 /**
@@ -2921,6 +3269,34 @@ public object FfiConverterSequenceString: FfiConverterRustBuffer<List<kotlin.Str
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterString.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypePanelRow: FfiConverterRustBuffer<List<PanelRow>> {
+    override fun read(buf: ByteBuffer): List<PanelRow> {
+        val len = buf.getInt()
+        return List<PanelRow>(len) {
+            FfiConverterTypePanelRow.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<PanelRow>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypePanelRow.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<PanelRow>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypePanelRow.write(it, buf)
         }
     }
 }

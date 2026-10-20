@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Builds oni-link-ffi for Android phones into android/app/src/main/jniLibs, then regenerates the Kotlin
-# bindings. Needs cargo-ndk and an NDK in ANDROID_NDK_HOME; ONI_RS names the Rust repository, else a sibling.
+# bindings and the design tokens. Needs cargo-ndk and an NDK in ANDROID_NDK_HOME; ONI_RS names the Rust
+# repository, else a sibling.
 set -euo pipefail
 
 here=$(cd "$(dirname "$0")/.." && pwd)
@@ -15,4 +16,5 @@ cargo ndk -t "$abi" --platform 29 -o "$here/android/app/src/main/jniLibs" build 
 cargo run -p oni-link-ffi --features cli --bin uniffi-bindgen --release -- \
     generate --library "target/$target/release/liboni_link_ffi.so" --language kotlin --no-format \
     --out-dir "$here/android/app/src/main/java"
+ONI_RS="$link" python3 -I "$here/scripts/ds-tokens.py"
 echo "Built $here/android/app/src/main/jniLibs/$abi/liboni_link_ffi.so"

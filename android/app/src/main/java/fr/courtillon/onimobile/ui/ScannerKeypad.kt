@@ -82,7 +82,7 @@ private fun sides(letter: Letter): Pair<Rgba, Rgba> = when (letter) {
 fun scannerStyle(albedo: Rgba, ink: Rgba): KeycapStyle {
     val small = KeycapStyle.small
     val padding = maxOf(DS.Scanner.keyPaddingH.value, small.wallLeft, small.wallRight)
-    return small.copy(albedo = albedo, labelColor = ink, fontSize = DS.Scanner.KEY_LEGEND_SIZE, paddingH = padding)
+    return small.copy(albedo = albedo, labelColor = ink, fontSize = DS.Scanner.keyLegendSize, paddingH = padding)
 }
 
 private val greyStyle = scannerStyle(DS.Palette.keycap, DS.Palette.textOnFill)

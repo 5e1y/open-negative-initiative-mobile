@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,9 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import fr.courtillon.onimobile.ds.DS
 import fr.courtillon.onimobile.link.ImportOutcome
 import fr.courtillon.onimobile.link.LinkModel
@@ -80,13 +76,13 @@ fun ImportScreen(link: LinkModel, done: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(DS.Space.md),
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text("Import", color = DS.Palette.textPrimary, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+            Text("Import", color = DS.Palette.textPrimary, fontSize = DS.Type.title, fontWeight = DS.Type.strong, modifier = Modifier.weight(1f))
             LoneCap("DONE", true, Modifier.width(DS.Scanner.wideKeyWidth), done)
         }
         Text(
             "Pick photos to send to ${link.desktop?.name ?: "the desktop"}. Each goes as its original file: a RAW scan arrives as its DNG.",
             color = DS.Palette.textSecondary,
-            style = MaterialTheme.typography.bodyMedium,
+            fontSize = DS.Type.label,
         )
         LoneCap("CHOOSE PHOTOS", working == null && link.canImport, Modifier.fillMaxWidth()) {
             link.holdForImport()
@@ -94,7 +90,7 @@ fun ImportScreen(link: LinkModel, done: () -> Unit) {
         }
         working?.let {
             Row(horizontalArrangement = Arrangement.spacedBy(DS.Space.sm), verticalAlignment = Alignment.CenterVertically) {
-                CircularProgressIndicator(Modifier.size(18.dp), color = DS.Palette.lcdInk, strokeWidth = 2.dp)
+                CircularProgressIndicator(Modifier.size(DS.Icon.size), color = DS.Palette.lcdInk, strokeWidth = DS.Stroke.emphasis)
                 Text(it, color = DS.Palette.textPrimary)
             }
         }
@@ -102,18 +98,18 @@ fun ImportScreen(link: LinkModel, done: () -> Unit) {
             Text(
                 if (link.status == LinkModel.Status.CONNECTED) "This desktop does not take photos." else "Connect to the desktop first.",
                 color = DS.Palette.textSecondary,
-                style = MaterialTheme.typography.bodySmall,
+                fontSize = DS.Type.value,
             )
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(DS.Space.xs)) {
             items(batches) { batch ->
                 Column(
-                    Modifier.fillMaxWidth().background(DS.Palette.lcdGlass, RoundedCornerShape(8.dp)).padding(DS.Space.sm),
+                    Modifier.fillMaxWidth().background(DS.Palette.lcdGlass, RoundedCornerShape(DS.Radius.badge)).padding(DS.Space.sm),
                     verticalArrangement = Arrangement.spacedBy(DS.Space.xxs),
                 ) {
                     Text(summary(batch), color = DS.Palette.textPrimary)
                     batch.outcome.problem?.let {
-                        Text(it, color = DS.Palette.textSecondary, style = MaterialTheme.typography.bodySmall)
+                        Text(it, color = DS.Palette.textSecondary, fontSize = DS.Type.value)
                     }
                 }
             }

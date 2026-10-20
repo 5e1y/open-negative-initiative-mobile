@@ -39,13 +39,18 @@ jobs:
         env:
           ONI_RS: ${{ github.workspace }}/open-negative-initiative-rs
 
-      # The committed bindings must be what the Rust side generates, or the app was written against another API.
-      - name: Check the committed bindings
-        run: git -C open-negative-initiative-mobile diff --exit-code -- android/app/src/main/java/uniffi
+      # The committed bindings and tokens must be what the Rust side generates, or the app was written
+      # against another API or another design system.
+      - name: Check the committed bindings and tokens
+        run: |
+          git -C open-negative-initiative-mobile diff --exit-code -- android/app/src/main/java/uniffi
+          git -C open-negative-initiative-mobile diff --exit-code -- android/app/src/main/java/fr/courtillon/onimobile/ds/Tokens.kt
 
       - name: Unit tests and APK
         working-directory: open-negative-initiative-mobile/android
         run: ./gradlew --no-daemon testDebugUnitTest assembleDebug
+        env:
+          ONI_RS: ${{ github.workspace }}/open-negative-initiative-rs
 
       - uses: actions/upload-artifact@v4
         with:

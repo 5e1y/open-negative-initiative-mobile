@@ -22,6 +22,7 @@ import uniffi.oni_link_ffi.Command
 import uniffi.oni_link_ffi.DisplayListener
 import uniffi.oni_link_ffi.DisplayState
 import uniffi.oni_link_ffi.LinkException
+import uniffi.oni_link_ffi.Panel
 import uniffi.oni_link_ffi.RemoteSession
 import uniffi.oni_link_ffi.ScannerState
 import uniffi.oni_link_ffi.parsePairingCode
@@ -38,6 +39,9 @@ class LinkModel(application: Application) : AndroidViewModel(application) {
     var desktop by mutableStateOf(vault.desktop())
         private set
     var state by mutableStateOf<ScannerState?>(null)
+        private set
+    /** The open photo's face and the sliders of the desktop panel's tabs on it. */
+    var panel by mutableStateOf<Panel?>(null)
         private set
     var status by mutableStateOf(if (desktop == null) Status.UNPAIRED else Status.OFFLINE)
         private set
@@ -100,6 +104,7 @@ class LinkModel(application: Application) : AndroidViewModel(application) {
         vault.forgetDesktop()
         desktop = null
         state = null
+        panel = null
         roundTripMs = null
         problem = null
         status = Status.UNPAIRED
@@ -109,6 +114,8 @@ class LinkModel(application: Application) : AndroidViewModel(application) {
         val session = session ?: return
         if (status != Status.CONNECTED) return
         state = session.press(command)
+        // A face shows at once too; a slider's readout waits for the desktop to write it.
+        panel = session.current().panel
     }
 
     /** Keeps the session through the system's photo picker, which takes the screen from the app. */
@@ -195,6 +202,7 @@ class LinkModel(application: Application) : AndroidViewModel(application) {
     private fun apply(display: DisplayState, source: RemoteSession) {
         if (source !== session) return
         state = display.state
+        panel = display.panel
         roundTripMs = display.roundTripMs
         if (!display.connected) {
             hangUp()

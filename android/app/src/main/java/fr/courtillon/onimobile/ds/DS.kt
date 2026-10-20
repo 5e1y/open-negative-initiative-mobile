@@ -1,54 +1,126 @@
 package fr.courtillon.onimobile.ds
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import fr.courtillon.onimobile.ds.keycap.Rgba
 
-/** The desktop app's tokens the remote draws with, copied from its `DSTokens`, which stays authoritative. */
+/**
+ * What each token is for, as the desktop's `ui/ds/theme.slint` binds it: every value is a generated
+ * desktop token from `Tokens`, so a change of look on the desktop is one regeneration here.
+ * Screens read `DS`, never `Tokens`.
+ */
 object DS {
     object Space {
-        val xxs = 2.dp
-        val xs = 4.dp
-        val sm = 8.dp
-        val md = 16.dp
+        val xxs = Tokens.Space.xxs
+        val xs = Tokens.Space.xs
+        val sm = Tokens.Space.sm
+        val md = Tokens.Space.md
+        val lg = Tokens.Space.lg
+    }
+
+    /** The four radii `DSShape.rounded` allows, by what they round. */
+    object Radius {
+        val track = Tokens.Radius.track
+        val badge = Tokens.Radius.badge
+        val card = Tokens.Radius.card
+        val control = Tokens.Radius.control
+    }
+
+    object Stroke {
+        val hairline = Tokens.Stroke.hairline
+        val line = Tokens.Stroke.line
+        val emphasis = Tokens.Stroke.emphasis
+    }
+
+    /** Sizes in points on the desktop, scaled points here so the phone's text size setting holds. */
+    object Type {
+        val label = Tokens.Typo.labelSize.value.sp
+        val value = Tokens.Typo.valueSize.value.sp
+        val section = Tokens.Typo.sectionSize.value.sp
+        val title = Tokens.Typo.titleSize.value.sp
+        val heading = Tokens.Typo.headingSize.value.sp
+        val strong = FontWeight.SemiBold
+    }
+
+    /** Opacities of a state, never of a colour. */
+    object State {
+        const val disabled = Tokens.State.missing
+        const val idle = Tokens.State.idleLabel
+    }
+
+    object Motion {
+        const val quickMs = Tokens.Motion.curtainDurationMs
     }
 
     object Palette {
-        val lcdGlass = Color(0.05f, 0.05f, 0.05f)
-        val lcdInk = Color(0.93f, 0.93f, 0.93f)
-        val canvas = Color(0xFF1B1B1B)
-        val textOnFill = Rgba(1f, 1f, 1f)
-        val textOnLight = Rgba(0.12f, 0.12f, 0.12f)
+        val canvas = Tokens.Palette.canvas
+        val ground = Tokens.Palette.panel
+        val raised = Tokens.Palette.keycap
+        val lcdGlass = Tokens.Palette.lcdGlass
+        val lcdInk = Tokens.Palette.lcdInk
+        val textOnFill = Tokens.Palette.textOnFill.rgba
+        val textOnLight = Tokens.Palette.textOnLight.rgba
         /** An albedo, lit and shaded by the keycap chrome, so it reads darker than its own value. */
-        val keycap = Rgba(0x31 / 255f, 0x31 / 255f, 0x31 / 255f)
-        val textPrimary = Color.White
-        val textSecondary = Color.White.copy(alpha = 0.55f)
-        val lampOn = Color(0.36f, 0.86f, 0.47f)
-        val lampWait = Color(0.95f, 0.64f, 0.23f)
-        val lampOff = Color(0.32f, 0.32f, 0.32f)
+        val keycap = Tokens.Palette.keycap.rgba
+        val textPrimary = Tokens.System.primary
+        val textSecondary = Tokens.Palette.textSecondary
+        val track = Tokens.Palette.track
+        val trackFill = Tokens.Palette.trackFill
+        val separator = Tokens.Palette.separator
+        val destructive = Tokens.Tint.destructive
+        /** The desktop's button lamp: confirm when lit, the track's grey when not. */
+        val lampOn = Tokens.Tint.confirm
+        val lampWait = Tokens.Palette.warning
+        val lampOff = Tokens.Palette.track
     }
 
-    object Scanner {
-        val bandCool = Rgba(0.23f, 0.55f, 0.86f)
-        val bandWarm = Rgba(0.95f, 0.64f, 0.23f)
-        val bandGreen = Rgba(0.18f, 0.64f, 0.48f)
-        val bandMagenta = Rgba(0.84f, 0.20f, 0.50f)
-        val bandRed = Rgba(0.84f, 0.25f, 0.22f)
-        val bandCyan = Rgba(0.12f, 0.66f, 0.78f)
-        val bandBlue = Rgba(0.22f, 0.36f, 0.84f)
-        val bandYellow = Rgba(0.93f, 0.78f, 0.18f)
-        val bandDark = Rgba(0.28f, 0.28f, 0.30f)
-        val bandLight = Rgba(0.86f, 0.86f, 0.84f)
+    object Icon {
+        val size = Tokens.Control.iconSize
+    }
 
-        val wideKeyWidth = 96.dp
-        /** Under the desktop's 46: eight rows, the screen and the bar fit a phone without scrolling. */
-        val keyHeight = 44.dp
-        const val KEY_LEGEND_SIZE = 13f
-        val keyPaddingH = 8.dp
-        const val SCREEN_VALUE_SIZE = 30f
-        const val SCREEN_LABEL_SIZE = 12f
-        val scanlinePitch = 3.dp
-        val phosphorGlow = 5.dp
-        val lampSize = 8.dp
+    /** `TabsStyle`: the segmented tabs, a raised pill under the selection. */
+    object Tabs {
+        val height = Tokens.Control.fieldHeight
+        val radius = Radius.badge
+        val inset = Space.xxs
+        val pillRadius = Radius.track
+    }
+
+    /** `SliderStyle`'s track, which the phone draws to show where a slider stands. */
+    object Slider {
+        val track = Tokens.Control.trackHeight
+        val knob = Tokens.Control.handleSize
+    }
+
+    /** `ScannerStyle`. */
+    object Scanner {
+        val bandCool = Tokens.Scanner.bandCool.rgba
+        val bandWarm = Tokens.Scanner.bandWarm.rgba
+        val bandGreen = Tokens.Scanner.bandGreen.rgba
+        val bandMagenta = Tokens.Scanner.bandMagenta.rgba
+        val bandRed = Tokens.Scanner.bandRed.rgba
+        val bandCyan = Tokens.Scanner.bandCyan.rgba
+        val bandBlue = Tokens.Scanner.bandBlue.rgba
+        val bandYellow = Tokens.Scanner.bandYellow.rgba
+        val bandDark = Tokens.Scanner.bandDark.rgba
+        val bandLight = Tokens.Scanner.bandLight.rgba
+
+        val wideKeyWidth = Tokens.Scanner.wideKeyWidth
+        val keyHeight = Tokens.Scanner.keyHeight
+        val keyLegendSize = Tokens.Scanner.keyLegendSize.value
+        val keyPaddingH = Tokens.Scanner.keyPaddingH
+        val screenHeight = Tokens.Control.mainHistogramHeight
+        val screenValueSize = Tokens.Scanner.screenValueSize.value
+        val screenLabelSize = Tokens.Scanner.screenLabelSize.value
+        val scanlinePitch = Tokens.Scanner.scanlinePitch
+        /** `ScannerStyle.scanline`, a theme value no Swift token holds: black at 35 %. */
+        val scanline = Color(0x59000000)
+        val phosphorGlow = Tokens.Scanner.phosphorGlow
+        val lampSize = Tokens.Control.lampSize
+        val faceBar = Tokens.Control.modeBarWidth
     }
 }
+
+/** A token colour as the keycap's albedo. */
+val Color.rgba: Rgba get() = Rgba(red, green, blue, alpha)

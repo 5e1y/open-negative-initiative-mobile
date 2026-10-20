@@ -20,7 +20,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,11 +39,8 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import fr.courtillon.onimobile.ds.DS
 import fr.courtillon.onimobile.link.LinkModel
@@ -87,14 +83,14 @@ fun PairingScreen(link: LinkModel) {
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(DS.Space.md),
         verticalArrangement = Arrangement.spacedBy(DS.Space.md),
     ) {
-        Text("ONI Mobile", color = DS.Palette.textPrimary, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+        Text("ONI Mobile", color = DS.Palette.textPrimary, fontSize = DS.Type.heading, fontWeight = DS.Type.strong)
         Text(
             "Show ONI's pairing code on the desktop and hold the phone up to it. Both must be on the same network.",
             color = DS.Palette.textSecondary,
-            style = MaterialTheme.typography.bodyMedium,
+            fontSize = DS.Type.label,
         )
         Box(
-            Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(16.dp)).background(DS.Palette.lcdGlass),
+            Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(DS.Radius.control)).background(DS.Palette.lcdGlass),
             contentAlignment = Alignment.Center,
         ) {
             when (camera) {
@@ -103,29 +99,29 @@ fun PairingScreen(link: LinkModel) {
                     "The camera is off for ONI Mobile. Allow it in Settings, or paste the pairing link below.",
                     color = DS.Palette.textSecondary,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodySmall,
+                    fontSize = DS.Type.value,
                     modifier = Modifier.padding(DS.Space.md),
                 )
                 Camera.UNASKED -> Unit
             }
             if (busy) CircularProgressIndicator(color = DS.Palette.lcdInk)
         }
-        link.problem?.let { Text(it, color = DS.Palette.lampWait, style = MaterialTheme.typography.bodySmall) }
+        link.problem?.let { Text(it, color = DS.Palette.lampWait, fontSize = DS.Type.value) }
         Spacer(Modifier.padding(top = DS.Space.sm))
         BasicTextField(
             value = pasted,
             onValueChange = { pasted = it },
             singleLine = true,
-            textStyle = TextStyle(color = DS.Palette.lcdInk, fontFamily = FontFamily.Monospace, fontSize = 13.sp),
+            textStyle = TextStyle(color = DS.Palette.lcdInk, fontFamily = FontFamily.Monospace, fontSize = DS.Type.label),
             cursorBrush = SolidColor(DS.Palette.lcdInk),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None, autoCorrectEnabled = false),
             modifier = Modifier.fillMaxWidth(),
             decorationBox = { field ->
-                Box(Modifier.background(DS.Palette.lcdGlass, RoundedCornerShape(8.dp)).padding(DS.Space.sm)) {
+                Box(Modifier.background(DS.Palette.lcdGlass, RoundedCornerShape(DS.Radius.badge)).padding(DS.Space.sm)) {
                     if (pasted.isEmpty()) {
                         Text(
                             "oni-link://pair?…", color = DS.Palette.textSecondary,
-                            fontFamily = FontFamily.Monospace, fontSize = 13.sp,
+                            fontFamily = FontFamily.Monospace, fontSize = DS.Type.label,
                         )
                     }
                     field()

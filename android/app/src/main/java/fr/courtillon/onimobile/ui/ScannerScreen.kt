@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -45,8 +44,8 @@ fun ScannerScreen(state: ScannerState, modifier: Modifier = Modifier) {
         fontSize = with(density) { size.dp.toSp() },
         shadow = glow,
     )
-    val label = mono(DS.Scanner.SCREEN_LABEL_SIZE, FontWeight.Medium)
-    val value = mono(DS.Scanner.SCREEN_VALUE_SIZE, FontWeight.Bold)
+    val label = mono(DS.Scanner.screenLabelSize, FontWeight.Medium)
+    val value = mono(DS.Scanner.screenValueSize, FontWeight.Bold)
     val effects = buildList {
         add("CT " + ScannerText.percent(state.contrast))
         add("VIG " + ScannerText.stops(state.vignette))
@@ -66,10 +65,10 @@ fun ScannerScreen(state: ScannerState, modifier: Modifier = Modifier) {
             .drawWithContent {
                 drawContent()
                 val pitch = DS.Scanner.scanlinePitch.toPx()
-                val line = 1.dp.toPx()
+                val line = DS.Stroke.line.toPx()
                 var y = 0f
                 while (y < size.height) {
-                    drawRect(Color.Black.copy(alpha = 0.35f), Offset(0f, y), Size(size.width, line))
+                    drawRect(DS.Scanner.scanline, Offset(0f, y), Size(size.width, line))
                     y += pitch
                 }
             }
