@@ -1,11 +1,15 @@
 # ONI Mobile — working notes
 
-The phone companion of Open Negative Initiative (ONI): the Scanner face's keypad as a remote, and import
-of scans to the desktop. `README.md` says how to build. The protocol and every hard part live in Rust, in
+The phone companion of Open Negative Initiative (ONI): a remote holding the desktop panel's Roll, Color
+and Details tabs on the Scanner or Pro face, and import of scans to the desktop. `README.md` says how to build. The protocol and every hard part live in Rust, in
 the `oni-link`, `oni-localsend` and `oni-link-ffi` crates of `5e1y/open-negative-initiative-rs`, checked
 out next to this repository; this repository holds only thin native interfaces over them (UniFFI).
 
 ## Decisions
+
+- **One design system with the desktop.** `android/.../ds/Tokens.kt` is generated from the desktop's
+  `crates/oni-ui/ui/ds/tokens.slint` by `scripts/ds-tokens.py`; screens use no literal size or colour, and
+  a unit test fails when the copy drifts. The launcher icon is the desktop app's.
 
 - **Android first** (Kotlin and Compose, `android/`, arm64 only, minSdk 29). The iPhone app (SwiftUI,
   `ONIMobile/`) builds and runs in the simulator but is parked.
